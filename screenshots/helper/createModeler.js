@@ -17,6 +17,8 @@ const mkdirp = require('mkdirp');
 const rimraf = require('rimraf');
 const Application = require('spectron').Application;
 
+const sharp = require('sharp');
+
 const platform = os.platform();
 
 const { applicationPaths } = require('./applicationPaths');
@@ -28,11 +30,11 @@ if (!applicationPath) {
 }
 
 class Modeler {
-  constructor(diagramPaths = []) {
+  constructor(diagramPaths = [], configPath = undefined) {
+
+    this._tmpUserDataPath = copyUserData(configPath);
 
     this._tmpDiagramPaths = copyDiagrams(diagramPaths);
-
-    this._tmpUserDataPath = copyUserData();
 
     this.app = new Application({
       path: path.join(__dirname, '../../dist', applicationPath),
@@ -86,9 +88,19 @@ class Modeler {
     return await this.app.client.getText(selector);
   }
 
-  async auditA11y(options) {
-    return await this.app.client.auditAccessibility(options);
+  async mouseOver(selector, xOffset, yOffset) {
+    await this.app.client.moveToObject(selector, xOffset, yOffset);
   }
+
+  async takeScreenshot(filename, rect = undefined) {
+    const imgBuffer = await this.app.browserWindow.capturePage(rect);
+
+    // Remove transparency and save img
+    sharp(imgBuffer)
+      .flatten({ background: { r: 255, g: 255, b: 255 } })
+      .toFile(filename, (err) => { if (err) throw err; });
+  }
+
 }
 
 /**
@@ -98,10 +110,10 @@ class Modeler {
  *
  * @returns {Object}
  */
-async function createModeler(diagramPaths = []) {
+async function createModeler(diagramPaths = [], configPath = undefined) {
   await killModelerInstances();
 
-  const modeler = new Modeler(diagramPaths);
+  const modeler = new Modeler(diagramPaths, configPath);
 
   await modeler.open();
 
@@ -135,8 +147,15 @@ function copyDiagrams(diagramPaths = []) {
   });
 }
 
-function copyUserData() {
-  const userDataConfigPath = path.join(__dirname, '../fixtures/user-data/config.json'),
+/**
+ * Setup the config.json file to create custom userData
+ *
+ * @param {string} configPath path to config.json. A default config will be provided if undefined
+ *
+ * @returns {string} path to the user directory
+ */
+function copyUserData(configPath = '../fixtures/user-data/default_config.json') {
+  const userDataConfigPath = path.join(__dirname, configPath),
         tmpUserDataConfigPath = path.join(__dirname, '../tmp/user-data/config.json');
 
   mkdirp.sync(path.join(__dirname, '../tmp/user-data'));

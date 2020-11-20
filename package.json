@@ -27,6 +27,7 @@
     "send-license-book-summary": "node tasks/send-license-book-summary.js -s",
     "release": "lerna publish --force-publish",
     "test": "run-s *:test",
+    "screenshots": "(cd screenshots && mocha spec/**/*Spec.js)",
     "start": "run-s \"dev -- {@}\" --",
     "link-dependencies": "node tasks/link-dependencies.js"
   },
@@ -67,11 +68,13 @@
     "nyc": "^15.0.0",
     "proxyquire": "^2.1.1",
     "rimraf": "^3.0.2",
+    "sharp": "^0.26.3",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "spectron": "^9.0.0",
     "tar-stream": "^2.1.0",
     "which": "^1.2.0",
     "yauzl": "^2.10.0"
-  }
+  },
+  "dependencies": {}
 }
