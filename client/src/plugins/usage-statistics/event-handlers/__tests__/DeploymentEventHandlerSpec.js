@@ -12,7 +12,11 @@
 
 import DeploymentEventHandler from '../DeploymentEventHandler';
 
-import diagramXML from './fixtures/process-variables.bpmn';
+import processVariablesXML from './fixtures/process-variables.bpmn';
+import userTasksXML from './fixtures/user-tasks.bpmn';
+import userTasksWithParticipantsXML from './fixtures/user-tasks-with-participants.bpmn';
+import userTasksWithSubprocessXML from './fixtures/user-tasks-with-subprocess.bpmn';
+import emptyXML from './fixtures/empty.bpmn';
 
 const EXAMPLE_ERROR = 'something went wrong';
 
@@ -178,7 +182,7 @@ describe('<DeploymentEventHandler>', () => {
       const tab = createTab({
         type: 'bpmn',
         file: {
-          contents: diagramXML
+          contents: processVariablesXML
         }
       });
 
@@ -229,6 +233,141 @@ describe('<DeploymentEventHandler>', () => {
       const metrics = onSend.getCall(0).args[0].diagramMetrics;
 
       expect(metrics.processVariablesCount).not.to.exist;
+    });
+
+
+    it('should send metrics with root level user tasks', async () => {
+
+      // given
+      const tab = createTab({
+        type: 'bpmn',
+        file: {
+          contents: userTasksXML
+        }
+      });
+
+      const handleDeploymentDone = subscribe.getCall(0).args[1];
+
+      // when
+      await handleDeploymentDone({ tab });
+
+      // then
+      const metrics = onSend.getCall(0).args[0].diagramMetrics;
+
+      expect(metrics.tasks).to.eql({
+        userTask: {
+          count: 8,
+          form: {
+            count: 6,
+            embedded: 3,
+            external: 1,
+            generic: 2,
+            other: 1
+          }
+        }
+      });
+    });
+
+
+    it('should send metrics with user tasks in pools', async () => {
+
+      // given
+      const tab = createTab({
+        type: 'bpmn',
+        file: {
+          contents: userTasksWithParticipantsXML
+        }
+      });
+
+      const handleDeploymentDone = subscribe.getCall(0).args[1];
+
+      // when
+      await handleDeploymentDone({ tab });
+
+      // then
+      const metrics = onSend.getCall(0).args[0].diagramMetrics;
+
+      expect(metrics.tasks).to.eql({
+        userTask: {
+          count: 8,
+          form: {
+            count: 6,
+            embedded: 3,
+            external: 1,
+            generic: 2,
+            other: 1
+          }
+        }
+      });
+    });
+
+
+    it('should send metrics with user tasks in subprocess', async () => {
+
+      // given
+      const tab = createTab({
+        type: 'bpmn',
+        file: {
+          contents: userTasksWithSubprocessXML
+        }
+      });
+
+      const handleDeploymentDone = subscribe.getCall(0).args[1];
+
+      // when
+      await handleDeploymentDone({ tab });
+
+      // then
+      const metrics = onSend.getCall(0).args[0].diagramMetrics;
+
+      expect(metrics.tasks).to.eql({
+        userTask: {
+          count: 4,
+          form: {
+            count: 4,
+            embedded: 1,
+            external: 2,
+            generic: 0,
+            other: 1
+          }
+        }
+      });
+    });
+
+
+    it('should send empty metrics without any tasks', async () => {
+
+      // given
+      const tab = createTab({
+        type: 'bpmn',
+        file: {
+          contents: emptyXML
+        }
+      });
+
+      const handleDeploymentDone = subscribe.getCall(0).args[1];
+
+      // when
+      await handleDeploymentDone({ tab });
+
+      // then
+      const metrics = onSend.getCall(0).args[0].diagramMetrics;
+
+      expect(metrics).to.eql({
+        tasks: {
+          userTask: {
+            count: 0,
+            form: {
+              count: 0,
+              embedded: 0,
+              external: 0,
+              generic: 0,
+              other: 0
+            }
+          }
+        },
+        processVariablesCount: 0
+      });
     });
 
   });

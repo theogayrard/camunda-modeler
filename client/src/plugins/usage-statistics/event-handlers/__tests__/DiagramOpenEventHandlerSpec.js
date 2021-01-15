@@ -12,6 +12,12 @@
 
 import DiagramOpenEventHandler from '../DiagramOpenEventHandler';
 
+import processVariablesXML from './fixtures/process-variables.bpmn';
+import userTasksXML from './fixtures/user-tasks.bpmn';
+import userTasksWithParticipantsXML from './fixtures/user-tasks-with-participants.bpmn';
+import userTasksWithSubprocessXML from './fixtures/user-tasks-with-subprocess.bpmn';
+import emptyXML from './fixtures/empty.bpmn';
+
 describe('<DiagramOpenEventHandler>', () => {
 
   it('should subscribe to bpmn.modeler.created', () => {
@@ -207,6 +213,248 @@ describe('<DiagramOpenEventHandler>', () => {
       diagramType: 'cmmn'
     });
   });
+
+
+  it('should send process variables', async () => {
+
+    // given
+    const subscribe = sinon.spy();
+    const onSend = sinon.spy();
+
+    const tab = createTab({
+      type: 'bpmn',
+      file: {
+        contents: processVariablesXML
+      }
+    });
+
+    const config = { get: () => null };
+
+    // when
+    const diagramOpenEventHandler = new DiagramOpenEventHandler({ onSend, subscribe, config });
+
+    diagramOpenEventHandler.enable();
+
+    const bpmnCallback = subscribe.getCall(0).args[1];
+
+    await bpmnCallback({ tab });
+
+    // then
+    expect(onSend).to.have.been.calledWith({
+      event: 'diagramOpened',
+      diagramType: 'bpmn',
+      elementTemplateCount: 0,
+      diagramMetrics: {
+        processVariablesCount: 3,
+        tasks: {
+          userTask: {
+            count: 0,
+            form: {
+              count: 0,
+              embedded: 0,
+              external: 0,
+              generic: 0,
+              other: 0
+            }
+          }
+        }
+      },
+      elementTemplates: []
+    });
+  });
+
+
+  it('should send metrics with root level user tasks', async () => {
+
+    // given
+    const subscribe = sinon.spy();
+    const onSend = sinon.spy();
+    const tab = createTab({
+      type: 'bpmn',
+      file: {
+        contents: userTasksXML
+      }
+    });
+
+    const config = { get: () => null };
+
+    // when
+    const diagramOpenEventHandler = new DiagramOpenEventHandler({ onSend, subscribe, config });
+
+    diagramOpenEventHandler.enable();
+
+    const bpmnCallback = subscribe.getCall(0).args[1];
+
+    await bpmnCallback({ tab });
+
+    // then
+    expect(onSend).to.have.been.calledWith({
+      event: 'diagramOpened',
+      diagramType: 'bpmn',
+      elementTemplateCount: 0,
+      diagramMetrics: {
+        processVariablesCount: 5,
+        tasks: {
+          userTask: {
+            count: 8,
+            form: {
+              count: 6,
+              embedded: 3,
+              external: 1,
+              generic: 2,
+              other: 1
+            }
+          }
+        }
+      },
+      elementTemplates: []
+    });
+  });
+
+
+  it('should send metrics with user tasks in pools', async () => {
+
+    // given
+    const subscribe = sinon.spy();
+    const onSend = sinon.spy();
+    const tab = createTab({
+      type: 'bpmn',
+      file: {
+        contents: userTasksWithParticipantsXML
+      }
+    });
+
+    const config = { get: () => null };
+
+    // when
+    const diagramOpenEventHandler = new DiagramOpenEventHandler({ onSend, subscribe, config });
+
+    diagramOpenEventHandler.enable();
+
+    const bpmnCallback = subscribe.getCall(0).args[1];
+
+    await bpmnCallback({ tab });
+
+    // then
+    expect(onSend).to.have.been.calledWith({
+      event: 'diagramOpened',
+      diagramType: 'bpmn',
+      elementTemplateCount: 0,
+      diagramMetrics: {
+        processVariablesCount: 5,
+        tasks: {
+          userTask: {
+            count: 8,
+            form: {
+              count: 6,
+              embedded: 3,
+              external: 1,
+              generic: 2,
+              other: 1
+            }
+          }
+        }
+      },
+      elementTemplates: []
+    });
+  });
+
+
+  it('should send metrics with user tasks in subprocess', async () => {
+
+    // given
+    const subscribe = sinon.spy();
+    const onSend = sinon.spy();
+    const tab = createTab({
+      type: 'bpmn',
+      file: {
+        contents: userTasksWithSubprocessXML
+      }
+    });
+
+    const config = { get: () => null };
+
+    // when
+    const diagramOpenEventHandler = new DiagramOpenEventHandler({ onSend, subscribe, config });
+
+    diagramOpenEventHandler.enable();
+
+    const bpmnCallback = subscribe.getCall(0).args[1];
+
+    await bpmnCallback({ tab });
+
+    // then
+    expect(onSend).to.have.been.calledWith({
+      event: 'diagramOpened',
+      diagramType: 'bpmn',
+      elementTemplateCount: 0,
+      diagramMetrics: {
+        processVariablesCount: 0,
+        tasks: {
+          userTask: {
+            count: 4,
+            form: {
+              count: 4,
+              embedded: 1,
+              external: 2,
+              generic: 0,
+              other: 1
+            }
+          }
+        }
+      },
+      elementTemplates: []
+    });
+  });
+
+
+  it('should send empty metrics without any tasks', async () => {
+
+    // given
+    const subscribe = sinon.spy();
+    const onSend = sinon.spy();
+    const tab = createTab({
+      type: 'bpmn',
+      file: {
+        contents: emptyXML
+      }
+    });
+
+    const config = { get: () => null };
+
+    // when
+    const diagramOpenEventHandler = new DiagramOpenEventHandler({ onSend, subscribe, config });
+
+    diagramOpenEventHandler.enable();
+
+    const bpmnCallback = subscribe.getCall(0).args[1];
+
+    await bpmnCallback({ tab });
+
+    // then
+    expect(onSend).to.have.been.calledWith({
+      event: 'diagramOpened',
+      diagramType: 'bpmn',
+      elementTemplateCount: 0,
+      diagramMetrics: {
+        processVariablesCount: 0,
+        tasks: {
+          userTask: {
+            count: 0,
+            form: {
+              count: 0,
+              embedded: 0,
+              external: 0,
+              generic: 0,
+              other: 0
+            }
+          }
+        }
+      },
+      elementTemplates: []
+    });
+  });
+
 });
 
 // helpers //////
@@ -225,4 +473,19 @@ function mockElementTemplates() {
       ]
     }
   ];
+}
+
+function createTab(overrides = {}) {
+  return {
+    id: 42,
+    name: 'foo.bar',
+    type: 'bar',
+    title: 'foo',
+    file: {
+      name: 'foo.bar',
+      contents: '',
+      path: null
+    },
+    ...overrides
+  };
 }
