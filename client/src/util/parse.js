@@ -13,6 +13,7 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
 import BpmnModdle from 'bpmn-moddle';
 
 import CamundaBpmnModdle from 'camunda-bpmn-moddle/resources/camunda';
+import { selfAndAllFlowElements } from './elementsUtil';
 
 
 export async function getDefinitions(xml) {
@@ -23,18 +24,6 @@ export async function getDefinitions(xml) {
   const { rootElement: definitions } = await moddle.fromXML(xml);
 
   return definitions;
-}
-
-function extractFlowElementsOfType(rootElement, type, flowElements) {
-  rootElement.flowElements.forEach((element) => {
-    if (is(element, type)) {
-      flowElements.push(element);
-    }
-    if (element.flowElements) {
-      flowElements = extractFlowElementsOfType(element, type, flowElements);
-    }
-  });
-  return flowElements;
 }
 
 /**
@@ -48,14 +37,14 @@ function extractFlowElementsOfType(rootElement, type, flowElements) {
  */
 export async function getAllElementsByType(xml, type) {
   const definitions = await getDefinitions(xml);
+
   const processes = definitions.rootElements.filter((e) => is(e, 'bpmn:Process'));
-  let flowElements = [];
+  const elements = [];
 
   processes.forEach((process) => {
-    if (process.flowElements) {
-      flowElements = extractFlowElementsOfType(process, type, flowElements);
-    }
+    const flowElements = selfAndAllFlowElements(process, false);
+    elements.push(...flowElements.filter((flowElement) => is(flowElement, type)));
   });
 
-  return flowElements;
+  return elements;
 }

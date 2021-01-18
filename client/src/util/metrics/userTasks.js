@@ -8,9 +8,9 @@
  * except in compliance with the MIT License.
  */
 
-import { getAllElementsByType } from './parse';
+import { getAllElementsByType } from '../parse';
 
-import { getFormFields } from './formHelpers';
+import { getFormFields } from '../formHelpers';
 
 export async function getUserTaskMetrics(file) {
   const userTasks = await getUserTasks(file);
@@ -41,7 +41,7 @@ function parseUserTaskForms(userTasks) {
     count: userTasks.filter((userTask) => hasFormKey(userTask) || hasFormField(userTask)).length,
     embedded: userTasks.filter((userTask) => hasFormKey(userTask) && isEmbedded(userTask.formKey)).length,
     external: userTasks.filter((userTask) => hasFormKey(userTask) && isExternal(userTask.formKey)).length,
-    generic: userTasks.filter((userTask) => hasFormField(userTask)).length,
+    generic: userTasks.filter((userTask) => !hasFormKey(userTask) && hasFormField(userTask)).length,
     other: userTasks.filter((userTask) => hasFormKey(userTask) && isOther(userTask.formKey)).length,
   };
 }

@@ -20,7 +20,7 @@
     <bpmn:userTask id="Activity_1vuefoc" name="blank" />
     <bpmn:userTask id="Activity_1ys7hg7" name="blank" />
     <bpmn:userTask id="Activity_18i8ebp" name="external" camunda:formKey="app:formkey" />
-    <bpmn:userTask id="Activity_04fi5hu" name="embedded &#38; generic" camunda:formKey="embedded:formkey">
+    <bpmn:userTask id="Activity_04fi5hu" name="embedded &#38; form fields" camunda:formKey="embedded:formkey">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="FormField_1vlna29" />

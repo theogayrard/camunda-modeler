@@ -301,7 +301,7 @@ describe('<DiagramOpenEventHandler>', () => {
               count: 6,
               embedded: 3,
               external: 1,
-              generic: 2,
+              generic: 1,
               other: 1
             }
           }
@@ -349,7 +349,7 @@ describe('<DiagramOpenEventHandler>', () => {
               count: 6,
               embedded: 3,
               external: 1,
-              generic: 2,
+              generic: 1,
               other: 1
             }
           }

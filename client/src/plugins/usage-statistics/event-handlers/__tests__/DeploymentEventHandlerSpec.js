@@ -261,7 +261,7 @@ describe('<DeploymentEventHandler>', () => {
             count: 6,
             embedded: 3,
             external: 1,
-            generic: 2,
+            generic: 1,
             other: 1
           }
         }
@@ -294,7 +294,7 @@ describe('<DeploymentEventHandler>', () => {
             count: 6,
             embedded: 3,
             external: 1,
-            generic: 2,
+            generic: 1,
             other: 1
           }
         }
