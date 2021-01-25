@@ -1,0 +1,57 @@
+directories:
+  output: dist
+  buildResources: build
+appId: com.camunda.CamundaModeler
+productName: Camunda Modeler
+files:
+  - filter:
+      - '**'
+      - '!**/__tests__'
+      - '!test'
+      - '!dev.js'
+afterPack: ./tasks/after-pack.js
+afterSign: ./tasks/after-sign.js
+afterAllArtifactBuild: ./tasks/after-all-artifact-build.js
+win:
+  target:
+    - target: zip
+      arch:
+        - x64
+        - ia32
+linux:
+  category: Development
+  target:
+    - target: tar.gz
+      arch:
+        - x64
+mac:
+  hardenedRuntime: true
+  entitlements: ./build/entitlements.mac.inherit.plist
+  target: dmg
+fileAssociations:
+  - ext: bpmn
+    name: CamundaModeler.BPMN
+    description: BPMN file
+    role: Editor
+    mimeType: application/bpmn
+  - ext: dmn
+    name: CamundaModeler.DMN
+    description: DMN file
+    role: Editor
+    mimeType: application/dmn
+  - ext: cmmn
+    name: CamundaModeler.CMMN
+    description: CMMN file
+    role: Editor
+    mimeType: application/cmmn
+forceCodeSigning: false
+artifactName: '${name}-${version}-${os}-${arch}.${ext}'
+dmg:
+  artifactName: '${name}-${version}-${os}.${ext}'
+nsis:
+  artifactName: '${name}-${version}-${os}-setup.${ext}'
+nsisWeb:
+  artifactName: '${name}-${version}-${os}-web-setup.${ext}'
+extraMetadata:
+  SENTRY_DSN: null
+electronVersion: 7.3.3
