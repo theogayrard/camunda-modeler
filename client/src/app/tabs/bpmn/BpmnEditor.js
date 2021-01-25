@@ -75,23 +75,23 @@ const COLORS = [{
 }, {
   title: 'Blue',
   fill: 'rgb(187, 222, 251)',
-  stroke: 'rgb(30, 136, 229)'
+  stroke: 'black'
 }, {
   title: 'Orange',
   fill: 'rgb(255, 224, 178)',
-  stroke: 'rgb(251, 140, 0)'
+  stroke: 'black'
 }, {
   title: 'Green',
   fill: 'rgb(200, 230, 201)',
-  stroke: 'rgb(67, 160, 71)'
+  stroke: 'black'
 }, {
   title: 'Red',
   fill: 'rgb(255, 205, 210)',
-  stroke: 'rgb(229, 57, 53)'
+  stroke: 'black'
 }, {
   title: 'Purple',
   fill: 'rgb(225, 190, 231)',
-  stroke: 'rgb(142, 36, 170)'
+  stroke: 'black'
 }];
 
 
