@@ -81,12 +81,14 @@ class DefaultProvider {
   }
 
   _writeFile() {
-    try {
-      fs.writeFileSync(this._path, JSON.stringify(this._json, null, 2), 'utf8');
-    } catch (error) {
-      log.error(`cannot write file ${ this.path }`, error);
+    const path = this._path;
 
-      throw new Error(`cannot write file ${ this.path }`);
+    try {
+      fs.writeFileSync(path, JSON.stringify(this._json, null, 2), 'utf8');
+    } catch (error) {
+      log.error(`cannot write file ${ path }`, error);
+
+      throw new Error(`cannot write file ${ path }`);
     }
   }
 }
